@@ -5,6 +5,9 @@ const mongoose = require('mongoose');
 const Listing = require("./models/listing.js");
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 const path = require("path");
+app.use(express.urlencoded({extended:true}));
+app.set("view engine","ejs");
+app.set("views",path.join(__dirname,"views"));
 main()
 .then(()=>{
     console.log("connected to DB");
@@ -15,8 +18,6 @@ main()
 async function main(){
     await mongoose.connect(MONGO_URL);
 }
-app.set("view engine","ejs");
-app.set("views",path.join(__dirname,"views"));
 app.get('/', (req, res) => {
   res.send('App running on port 8080');
 });
@@ -25,6 +26,27 @@ app.get('/', (req, res) => {
 app.get('/listings',async (req,res)=>{
     const allListing = await Listing.find({});
     res.render("listings/index.ejs",{allListing});
+});
+
+//New route for creating a listing
+app.get('/listings/new',(req,res)=>{
+    res.render("listings/new.ejs");
+});
+
+app.post('/listings',async (req,res) =>{
+   // let {title , description , price , location ,country} = req.body;
+//    let listing = req.body.listing;
+//    console.log(listing);
+    const listing = new Listing(req.body.listing);
+    await listing.save();
+    console.log("new listing saved successfully");
+    res.redirect('/listings');
+});
+//Show route for a single listing
+app.get('/listings/:id',async (req,res)=>{
+    const {id} = req.params;
+    const listing = await Listing.findById(id);
+    res.render("listings/show.ejs",{listing});
 });
 // app.get('/testListing', async (req,res) => {
 //     const sampleListing = new Listing({
