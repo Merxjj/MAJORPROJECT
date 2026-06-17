@@ -63,6 +63,12 @@ app.put('/listings/:id',async (req,res)=>{
     console.log("listing updated successfully");
     res.redirect(`/listings/${id}`);
 });
+app.delete('/listings/:id',async (req,res)=>{
+    const {id} = req.params;
+    await Listing.findByIdAndDelete(id);
+    console.log("listing deleted successfully");
+    res.redirect('/listings');
+});
 // app.get('/testListing', async (req,res) => {
 //     const sampleListing = new Listing({
 //         title: "My new villa",
