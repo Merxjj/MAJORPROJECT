@@ -1,23 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All listings</title>
-</head>
-<body>
-<ul>
-    <form method="GET" action="/listings/new">
-        <button type="submit">Add New Listing</button>
-    </form>
-    <h1>All Listings</h1>
+<%layout('/layouts/boilerplate')%>
 
-    <%for(let listing of allListing) { %>
-        <div>
-            <a href="/listings/<%= listing._id %>"><%= listing.title %></a>
-          
-        </div>
-        <% } %>
-</ul>
-</body>
-</html>
+    <body>
+        <ul>
+            <h1>All Listings</h1>
+            <form method="GET" action="/listings/new">
+                <button type="submit">Add New Listing</button>
+            </form>
+
+            <%for(let listing of allListing) { %>
+                <div>
+                    <a href="/listings/<%= listing._id %>">
+                        <%= listing.title %>
+                    </a>
+
+                </div>
+                <% } %>
+        </ul>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+            crossorigin="anonymous"></script>
+    </body>
