@@ -2,12 +2,20 @@
 
     <body>
         <ul>
-            <h1>All Listings</h1>
+            <!-- <h1>All Listings</h1>
             <form method="GET" action="/listings/new">
                 <button type="submit">Add New Listing</button>
-            </form>
+            </form> -->
 
             <%for(let listing of allListing) { %>
+                <div>
+                    <a href="/listings/<%= listing._id %>">
+                        <%= listing.title %>
+                    </a>
+
+                </div>
+                <% } %>
+                  <%for(let listing of allListing) { %>
                 <div>
                     <a href="/listings/<%= listing._id %>">
                         <%= listing.title %>

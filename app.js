@@ -14,6 +14,9 @@ main()
 .catch((err)=>{
     console.log(err);
 });
+async function main(){
+    await mongoose.connect(MONGO_URL);
+}
 app.use(methodOverride("_method"));
 app.use(express.urlencoded({extended:true}));
 app.set("view engine","ejs");
@@ -21,9 +24,7 @@ app.set("views",path.join(__dirname,"views"));
 app.engine("ejs",ejsMate);
 app.use(express.static(path.join(__dirname,"public")));
 app.set()
-async function main(){
-    await mongoose.connect(MONGO_URL);
-}
+
 app.get('/', (req, res) => {
   res.send('App running on port 8080');
 });
