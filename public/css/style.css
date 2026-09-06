@@ -1,4 +1,6 @@
-
+body {
+    font-family: "Plus Jakarta Sans", sans-seri !important;
+}
 .navbar{
     height : 5rem;
     background-color: white;
@@ -10,4 +12,77 @@
 .nav-link{
     color : #222222 !important;
 
+}
+.f-info-links a {
+    text-decoration: none;
+    color:black;
+}
+.f-info-links :hover{
+    text-decoration : underline;
+}
+.f-info-links {
+    width: 100%;
+}
+.f-info-socials{
+    width: 100%;
+    font-size: 1.4rems;
+    vertical-align: middle;
+}
+.f-info,
+.f-info-socials,
+.f-info-brand{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.f-info{
+    display: flex;
+    height: 8rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: space-evenly;
+    text-align: center;
+    background-color : #e7e5e5;
+}
+
+/* Cards image top bottom right up     */
+.card{
+    border: none !important;
+    margin-bottom: 2rem;
+}
+.card-img-top{
+    border-radius: 1rem !important;  
+    width: 100%;
+    object-fit: cover !important;
+
+}
+
+.card-body{
+    padding: 0 !important;
+
+}
+.card-text p {
+    font-weight : 400 !important;
+}
+.listing-link{
+    text-decoration: none !important;
+}
+
+/* .card-img-overlay{
+    opacity:0;
+}
+
+.card-img-overlay :hover{
+    opacity:0.2;
+    background-color: white;
+}
+ */
+.card-img-overlay {
+    opacity: 0;
+}
+
+.card:hover .card-img-overlay {
+    opacity: 0.2;
+    background-color: white;
 }
