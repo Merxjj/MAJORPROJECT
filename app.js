@@ -23,7 +23,7 @@ app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"views"));
 app.engine("ejs",ejsMate);
 app.use(express.static(path.join(__dirname,"public")));
-app.set()
+
 
 app.get('/', (req, res) => {
   res.send('App running on port 8080');
@@ -56,7 +56,7 @@ app.get('/listings/:id',async (req,res)=>{
     res.render("listings/show.ejs",{listing});
 });
 //Edit route to edit particular listing
-app.get('/listing/:id/edit',async (req,res)=>{
+app.get('/listings/:id/edit',async (req,res)=>{
     const {id} = req.params;
     const listing = await Listing.findById(id);
     res.render("listings/edit",{listing});
