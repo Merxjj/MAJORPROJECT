@@ -9,6 +9,7 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
+const {ListingSchema} = require("./schema.js");
 main()
 .then(()=>{
     console.log("connected to DB");
@@ -42,14 +43,27 @@ app.get('/listings/new',(req,res)=>{
     res.render("listings/new.ejs");
 });
 
-app.post('/listings',wrapAsync(async (req,res,next) =>{
+// function to validate using joi
+const validateListing = (req,res,next)=>{
+ let {error} = ListingSchema.validate(req.body);
+    if(error){
+        let errMsg = error.details.map((el)=>el.message).join(",");
+        throw new ExpressError(400,errMsg);
+    }else{
+        next();
+    }
+}
+app.post('/listings',
+    validateListing,
+    wrapAsync(async (req,res,next) =>{
    // let {title , description , price , location ,country} = req.body;
 //    let listing = req.body.listing;
 //    console.log(listing);
 // try{
-    if(!req.body.listing){
-        throw new ExpressError(400,"Send Valid data for listing");
-    }
+    // if(!req.body.listing){
+    //     throw new ExpressError(400,"Send Valid data for listing");
+    // }
+   
     const listing = new Listing(req.body.listing);
     await listing.save();
     console.log("new listing saved successfully");
@@ -71,12 +85,15 @@ app.get('/listings/:id/edit', wrapAsync(async (req,res)=>{
     res.render("listings/edit",{listing});
 }));
 //Update route to edit and update the listing
-app.put('/listings/:id', wrapAsync(async (req,res)=>{
-    if(!req.body.listing){
-        throw new ExpressError(400,"Send Valid data for listing");
-    }
+app.put('/listings/:id', 
+    validateListing,
+    wrapAsync(async (req,res)=>{
     const {id} = req.params;
-    const listing = await Listing.findByIdAndUpdate(id,req.body.listing);
+    const listing = await Listing.findByIdAndUpdate(
+        id,
+        req.body.listing,
+        { runValidators: true }
+    );
     console.log("listing updated successfully");
     res.redirect(`/listings/${id}`);
 }));
