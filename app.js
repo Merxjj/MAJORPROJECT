@@ -10,6 +10,8 @@ const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
 const {ListingSchema} = require("./schema.js");
+const Review = require("./models/review.js");
+
 main()
 .then(()=>{
     console.log("connected to DB");
@@ -102,6 +104,23 @@ app.delete('/listings/:id',wrapAsync(async (req,res)=>{
     await Listing.findByIdAndDelete(id);
     console.log("listing deleted successfully");
     res.redirect('/listings');
+}));
+
+//reviews 
+//post route 
+app.post('/listings/:id/reviews',wrapAsync(async (req,res)=>{
+    let listing = await Listing.findById(req.params.id);
+    if(!listing){
+        throw new ExpressError(404,"Listing not found");
+    }
+    let newReview = new Review(req.body.review);
+    listing.reviews.push(newReview);
+    await newReview.save();
+    await listing.save();
+
+    console.log("new review saved");
+    res.send("new review saved");
+
 }));
 // app.get('/testListing', async (req,res) => {
 //     const sampleListing = new Listing({
