@@ -2,15 +2,14 @@ const express = require('express');
 const app = express();
 const port = 8080;
 const mongoose = require('mongoose');
-const Listing = require("./models/listing.js");
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
-const {ListingSchema,reviewSchema} = require("./schema.js");
-const Review = require("./models/review.js");
+const listing = require("./routes/listing.js");
+const reviews = require("./routes/reviews.js");
 
 main()
 .then(()=>{
@@ -34,115 +33,85 @@ app.get('/', (req, res) => {
   res.send('App running on port 8080');
 });
 
-//Index route for all listings
-app.get('/listings',wrapAsync(async (req,res)=>{
-    const allListing = await Listing.find({});
-    res.render("listings/index.ejs",{allListing});
-}));
+app.use("/listings",listing);
+app.use("/listings/:id/reviews",reviews);
 
-//New route for creating a listing
-app.get('/listings/new',(req,res)=>{
-    res.render("listings/new.ejs");
+app.all("/{*splat}", (req, res, next) => {
+    next(new ExpressError(404, "Page not Found"));  
 });
 
-// function to validate using joi
-const validateListing = (req,res,next)=>{
- let {error} = ListingSchema.validate(req.body);
-    if(error){
-        let errMsg = error.details.map((el)=>el.message).join(",");
-        throw new ExpressError(400,errMsg);
-    }else{
-        next();
-    }
-}
-const validateReview = (req,res,next)=>{
- let {error} = reviewSchema.validate(req.body);
-    if(error){
-        let errMsg = error.details.map((el)=>el.message).join(",");
-        throw new ExpressError(400,errMsg);
-    }else{
-        next();
-    }
-}
-app.post('/listings',
-    validateListing,
-    wrapAsync(async (req,res,next) =>{
-   // let {title , description , price , location ,country} = req.body;
-//    let listing = req.body.listing;
-//    console.log(listing);
-// try{
-    // if(!req.body.listing){
-    //     throw new ExpressError(400,"Send Valid data for listing");
-    // }
-   
-    const listing = new Listing(req.body.listing);
-    await listing.save();
-    console.log("new listing saved successfully");
-    res.redirect('/listings');
-    // }catch(err){
-    //     next(err);
-    // }
-}));
-//Show route for a single listing
-app.get('/listings/:id',wrapAsync(async (req,res)=>{
-    const {id} = req.params;
-    const listing = await Listing.findById(id).populate("reviews");
-    res.render("listings/show.ejs",{listing});
-}));
-//Edit route to edit particular listing
-app.get('/listings/:id/edit', wrapAsync(async (req,res)=>{
-    const {id} = req.params;
-    const listing = await Listing.findById(id);
-    res.render("listings/edit",{listing});
-}));
-//Update route to edit and update the listing
-app.put('/listings/:id', 
-    validateListing,
-    wrapAsync(async (req,res)=>{
-    const {id} = req.params;
-    const listing = await Listing.findByIdAndUpdate(
-        id,
-        req.body.listing,
-        { runValidators: true }
-    );
-    console.log("listing updated successfully");
-    res.redirect(`/listings/${id}`);
-}));
-app.delete('/listings/:id',wrapAsync(async (req,res)=>{
-    const {id} = req.params;
-    await Listing.findByIdAndDelete(id);
-    console.log("listing deleted successfully");
-    res.redirect('/listings');
-}));
+app.use((err, req, res, next) => {
+    let { statusCode = 500, message = "Something went wrong" } = err;
+    // res.status(statusCode).send(message);
+    res.status(statusCode).render("error.ejs",{err});
+});
 
-//reviews 
-//post route 
-app.post('/listings/:id/reviews',validateReview,wrapAsync(async (req,res)=>{
-    let listing = await Listing.findById(req.params.id);
-    if(!listing){
-        throw new ExpressError(404,"Listing not found");
-    }
-    let newReview = new Review(req.body.review);
-    listing.reviews.push(newReview);
-    await newReview.save();
-    await listing.save();
+app.listen(port, () => {
+    console.log(`App listening at http://localhost:${port}`);
+});
 
-    console.log("new review saved");
-    res.redirect(`/listings/${listing.id}`);
-}));
 
-// Delete Review Route
-app.delete(
-    "/listings/:id/reviews/:reviewId",
-    wrapAsync(async (req, res) => {
-        let { id, reviewId } = req.params;
 
-        await Listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
-        await Review.findByIdAndDelete(reviewId);
 
-        res.redirect(`/listings/${id}`);
-    })
-);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // app.get('/testListing', async (req,res) => {
 //     const sampleListing = new Listing({
@@ -168,16 +137,3 @@ app.delete(
 // app.listen(port, () => {
 //     console.log(`App listening at http://localhost:${port}`);
 // });
-app.all("/{*splat}", (req, res, next) => {
-    next(new ExpressError(404, "Page not Found"));
-});
-
-app.use((err, req, res, next) => {
-    let { statusCode = 500, message = "Something went wrong" } = err;
-    // res.status(statusCode).send(message);
-    res.status(statusCode).render("error.ejs",{err});
-});
-
-app.listen(port, () => {
-    console.log(`App listening at http://localhost:${port}`);
-});
