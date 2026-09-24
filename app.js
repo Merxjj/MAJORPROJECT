@@ -130,6 +130,20 @@ app.post('/listings/:id/reviews',validateReview,wrapAsync(async (req,res)=>{
     console.log("new review saved");
     res.redirect(`/listings/${listing.id}`);
 }));
+
+// Delete Review Route
+app.delete(
+    "/listings/:id/reviews/:reviewId",
+    wrapAsync(async (req, res) => {
+        let { id, reviewId } = req.params;
+
+        await Listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
+        await Review.findByIdAndDelete(reviewId);
+
+        res.redirect(`/listings/${id}`);
+    })
+);
+
 // app.get('/testListing', async (req,res) => {
 //     const sampleListing = new Listing({
 //         title: "My new villa",
