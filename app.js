@@ -33,7 +33,8 @@ app.use(express.static(path.join(__dirname,"public")));
 
 
 app.get('/', (req, res) => {
-  res.send('App running on port 8080');
+  res.send('App running on port 8080 visit http://localhost:8080/listings for property listing');
+
 });
 
 app.use("/listings",listing);
