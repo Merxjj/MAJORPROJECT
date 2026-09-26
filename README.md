@@ -123,7 +123,17 @@ Make sure MongoDB is installed and running on your system.
 
 The application uses MongoDB as its database.
 
-### 5. Start the application
+### 5. Initialize the database
+
+Run the database initialization script to insert the sample listings into MongoDB:
+
+```bash
+node init/index.js
+```
+
+This step is required when setting up the project for the first time or when you want to repopulate the database with the sample data.
+
+### 6. Start the application
 
 ```bash
 node app.js
@@ -136,6 +146,7 @@ Open the application in your browser using:
 ```text
 http://localhost:8080
 ```
+
 
 ## Database
 
@@ -195,3 +206,5 @@ Possible future improvements include:
 
 B.Tech Computer Science and Engineering
 IILM University, Greater Noida
+
+
