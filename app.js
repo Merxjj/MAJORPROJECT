@@ -10,7 +10,10 @@ const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
 const listing = require("./routes/listing.js");
 const reviews = require("./routes/reviews.js");
+const cookieParser = require("cookie-parser");
 
+
+app.use(cookieParser());
 main()
 .then(()=>{
     console.log("connected to DB");
