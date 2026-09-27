@@ -11,6 +11,8 @@ const ExpressError = require("./utils/ExpressError.js");
 const listing = require("./routes/listing.js");
 const reviews = require("./routes/reviews.js");
 const cookieParser = require("cookie-parser");
+const session = require("express-session");
+
 
 
 app.use(cookieParser());
@@ -31,6 +33,17 @@ app.set("views",path.join(__dirname,"views"));
 app.engine("ejs",ejsMate);
 app.use(express.static(path.join(__dirname,"public")));
 
+const sessionOptions = {
+    secret : "mysupersecretcode",
+    resave : false,
+    saveUninitialized : true,
+    cookie : {
+        expires : Date.now() + 7*24*60*60*1000,
+        maxAge : 7*24*60*60*1000,
+        httpOnly : true,
+    },
+};
+app.use(session(sessionOptions));
 
 app.get('/', (req, res) => {
   res.send('App running on port 8080 visit http://localhost:8080/listings for property listing');
