@@ -35,6 +35,7 @@ router.get('/new',(req,res)=>{
 router.get('/:id',wrapAsync(async (req,res)=>{
     const {id} = req.params;
     const listing = await Listing.findById(id).populate("reviews");
+    
     res.render("listings/show.ejs",{listing});
 }));
 //Edit route to edit particular listing
@@ -53,6 +54,7 @@ router.put('/:id',
         req.body.listing,
         { runValidators: true }
     );
+    req.flash("success","Listing Updated");
     console.log("listing updated successfully");
     res.redirect(`/listings/${id}`);
 }));
@@ -60,6 +62,7 @@ router.delete('/:id',wrapAsync(async (req,res)=>{
     const {id} = req.params;
     await Listing.findByIdAndDelete(id);
     console.log("listing deleted successfully");
+    req.flash("success","Listing Deleted!");
     res.redirect('/listings');
 }));
 router.post('/',
