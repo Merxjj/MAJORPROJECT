@@ -12,6 +12,7 @@ const listing = require("./routes/listing.js");
 const reviews = require("./routes/reviews.js");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
+const flash = require("connect-flash");
 
 
 
@@ -43,12 +44,20 @@ const sessionOptions = {
         httpOnly : true,
     },
 };
-app.use(session(sessionOptions));
 
 app.get('/', (req, res) => {
   res.send('App running on port 8080 visit http://localhost:8080/listings for property listing');
 
 });
+
+app.use(session(sessionOptions));
+app.use(flash());
+
+app.use((req,res,next)=>{
+    res.locals.success = req.flash("success");
+    next();
+});
+
 
 app.use("/listings",listing);
 app.use("/listings/:id/reviews",reviews);
