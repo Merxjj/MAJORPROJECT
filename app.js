@@ -8,12 +8,16 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
-const listing = require("./routes/listing.js");
-const reviews = require("./routes/reviews.js");
+const listingRouter = require("./routes/listing.js");
+const reviewsRouter = require("./routes/reviews.js");
+const userRouter = require("./routes/user.js");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const flash = require("connect-flash");
-
+const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
+const User = require("./models/user.js");
+const passportLocalMongoose = require("passport-local-mongoose").default;
 
 
 app.use(cookieParser());
@@ -53,15 +57,33 @@ app.get('/', (req, res) => {
 app.use(session(sessionOptions));
 app.use(flash());
 
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.use((req,res,next)=>{
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
     next();
 });
 
+// app.get("/registerUser", async (req, res) => {
+//     let fakeUser = new User({
+//         email: "student@gmail.com",
+//         username: "delta-student",
+//     });
 
-app.use("/listings",listing);
-app.use("/listings/:id/reviews",reviews);
+//     let newUser = await User.register(fakeUser, "helloworld");
+
+//     res.send(newUser);
+// });
+
+app.use("/listings",listingRouter);
+app.use("/listings/:id/reviews",reviewsRouter);
+app.use("/",userRouter);
 
 app.all("/{*splat}", (req, res, next) => {
     next(new ExpressError(404, "Page not Found"));  
