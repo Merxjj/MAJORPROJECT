@@ -31,12 +31,12 @@ This guide walks you through deploying Wanderlust to **Render** using a free clo
    - Choose **Drivers** (Node.js).
    - Copy the connection string. It will look like:
      ```text
-     mongodb+srv://<username>:<password>@cluster0.xxxx.mongodb.net/?retryWrites=true&w=majority
+     mongodb+srv://<DB_USERNAME>:<DB_PASSWORD>@<CLUSTER_NAME>.mongodb.net/?retryWrites=true&w=majority
      ```
-   - Replace `<username>` and `<password>` with your database user credentials.
+   - Replace `<DB_USERNAME>` and `<DB_PASSWORD>` with your database user credentials.
    - Append `/wanderlust` before the `?` query parameters:
      ```text
-     mongodb+srv://wanderlust_user:your_password@cluster0.xxxx.mongodb.net/wanderlust?retryWrites=true&w=majority
+     mongodb+srv://<DB_USERNAME>:<DB_PASSWORD>@<CLUSTER_NAME>.mongodb.net/<DB_NAME>?retryWrites=true&w=majority
      ```
 
 ---
@@ -83,7 +83,7 @@ ATLASDB_URL="your_mongodb_atlas_connection_string" node init/index.js
 4. **Add Environment Variables**:
    Under **Environment Variables**, add:
    - `NODE_ENV`: `production`
-   - `ATLASDB_URL`: `mongodb+srv://<username>:<password>@cluster0.xxxx.mongodb.net/wanderlust?retryWrites=true&w=majority`
+   - `ATLASDB_URL`: `mongodb+srv://<DB_USERNAME>:<DB_PASSWORD>@<CLUSTER_NAME>.mongodb.net/<DB_NAME>?retryWrites=true&w=majority`
    - `SECRET`: A random 32+ character string (e.g. `c7a8b9f1d2e3456789abcdef01234567`)
 
 5. **Deploy**:
