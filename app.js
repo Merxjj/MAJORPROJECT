@@ -1,8 +1,17 @@
+if (process.env.NODE_ENV !== "production") {
+    require("dotenv").config();
+}
+
 const express = require('express');
 const app = express();
-const port = 8080;
+const port = process.env.PORT || 8080;
+
+if (process.env.NODE_ENV === "production") {
+    app.set("trust proxy", 1);
+}
 const mongoose = require('mongoose');
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
+const dbUrl = process.env.ATLASDB_URL || process.env.MONGO_URL || MONGO_URL;
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
@@ -13,6 +22,7 @@ const reviewsRouter = require("./routes/reviews.js");
 const userRouter = require("./routes/user.js");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
+const MongoStore = require("connect-mongo").MongoStore || require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
@@ -29,7 +39,7 @@ main()
     console.log(err);
 });
 async function main(){
-    await mongoose.connect(MONGO_URL);
+    await mongoose.connect(dbUrl);
 }
 app.use(methodOverride("_method"));
 app.use(express.urlencoded({extended:true}));
@@ -38,20 +48,32 @@ app.set("views",path.join(__dirname,"views"));
 app.engine("ejs",ejsMate);
 app.use(express.static(path.join(__dirname,"public")));
 
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    crypto: {
+        secret: process.env.SECRET || "mysupersecretcode",
+    },
+    touchAfter: 24 * 3600,
+});
+
+store.on("error", (err) => {
+    console.log("ERROR in MONGO SESSION STORE", err);
+});
+
 const sessionOptions = {
-    secret : "mysupersecretcode",
-    resave : false,
-    saveUninitialized : true,
-    cookie : {
-        expires : Date.now() + 7*24*60*60*1000,
-        maxAge : 7*24*60*60*1000,
-        httpOnly : true,
+    store,
+    secret: process.env.SECRET || "mysupersecretcode",
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
     },
 };
 
 app.get('/', (req, res) => {
-  res.send('App running on port 8080 visit http://localhost:8080/listings for property listing');
-
+  res.redirect('/listings');
 });
 
 app.use(session(sessionOptions));
